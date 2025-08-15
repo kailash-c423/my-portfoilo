@@ -1,0 +1,366 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #222;
+            background: #eaf1fb;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .particle-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .container, .top-bar {
+            position: relative;
+            z-index: 2;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 30px 0 10px 40px;
+        }
+        .icon-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #fff;
+            border: 4px solid #0b1f3a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+            overflow: hidden;
+        }
+        .professional-anim {
+            width: 62px;
+            height: 62px;
+            animation: float 1.8s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95);
+        }
+        @keyframes float {
+            0% {transform: translateY(0);}
+            55% {transform: translateY(-5px);}
+            100% {transform: translateY(0);}
+        }
+        .intro-text {
+            font-size: 2rem;
+            color: #0b1f3a;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+        }
+        .container {
+            width: 80%;
+            margin: 30px auto 0 auto;
+            background: linear-gradient(135deg, #d4f0ff 0%, #c3e3fa 100%);
+            padding: 24px 30px;
+            border-radius: 18px;
+            box-shadow: 0px 10px 32px rgba(11,31,58,0.14);
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+        .nav-tabs button {
+            background: #0b1f3a;
+            color: #fff;
+            border: none;
+            outline: none;
+            font-weight: bold;
+            padding: 10px 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.18s;
+            font-size: 1rem;
+        }
+        .nav-tabs button.active, .nav-tabs button:hover {
+            background: #1783bd;
+        }
+        .section-title {
+            color: #0b1f3a;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-top: 30px;
+        }
+        .sub-heading {
+            color: #1783bd;
+            font-weight: bold;
+            font-size: 1.08rem;
+            margin-top: 18px;
+            display: flex;
+            align-items: center;
+        }
+        .sub-heading svg {
+            margin-right: 8px;
+        }
+        .skills-list, .soft-skills-list {
+            color: #111;
+            font-size: 16px;
+            font-weight: 500;
+            margin: 8px 0 18px 20px;
+        }
+        .skills-list ul,
+        .soft-skills-list ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .skills-list li,
+        .soft-skills-list li {
+            margin-bottom: 7px;
+        }
+        .bold {
+            font-weight: bold;
+            color: #111;
+        }
+        .contact-title {
+            color: #0b1f3a;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: underline;
+            margin-top: 32px;
+        }
+        .contact-details p {
+            font-weight: bold;
+            font-size: 18px;
+            color: #111;
+            margin: 5px 0;
+        }
+        .location {
+            color: #111;
+            margin-top: 18px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .social-icons {
+            margin-top: 20px;
+            display: flex;
+            gap: 18px;
+        }
+        .social-icon {
+            width: 34px;
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef2fa;
+            border-radius: 50%;
+            border: 2px solid #0b1f3a;
+            transition: box-shadow 0.2s, background 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.09);
+        }
+        .social-icon:hover {
+            background: #dbe5f6;
+            box-shadow: 0 2px 15px rgba(11,31,58,0.16);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        @media (max-width: 600px) {
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 20px;
+            }
+            .icon-circle {
+                margin-right: 0;
+                margin-bottom: 12px;
+            }
+            .container {
+                width: 98%;
+                padding: 10px;
+            }
+            .nav-tabs { flex-direction: column;}
+            .nav-tabs button {width:100%; margin-bottom:10px;}
+        }
+    </style>
+</head>
+<body>
+    <canvas class="particle-bg"></canvas>
+    <script>
+        const canvas = document.querySelector('.particle-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+        function createParticles() {
+            particles = [];
+            for (let i = 0; i < 45; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: 8 + Math.random() * 6,
+                    dx: (Math.random() - 0.5) * 0.5,
+                    dy: (Math.random() - 0.5) * 0.5,
+                    opacity: 0.11 + Math.random() * 0.13
+                });
+            }
+        }
+        createParticles();
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const p of particles) {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                ctx.fillStyle = `rgba(11,31,58,${p.opacity})`;
+                ctx.fill();
+                p.x += p.dx;
+                p.y += p.dy;
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+
+    <div class="top-bar">
+        <div class="icon-circle">
+            <!-- Professional SVG Icon: Man in suit/tie, animated float -->
+            <svg class="professional-anim" viewBox="0 0 64 64" fill="none">
+                <ellipse cx="32" cy="20" rx="12" ry="13" fill="#f3d6be"/>
+                <rect x="18" y="33" width="28" height="18" rx="8" fill="#223447"/>
+                <rect x="23" y="42" width="18" height="13" rx="4.5" fill="#223447"/>
+                <polygon points="32,33 28,42 36,42" fill="#fff"/>
+                <rect x="30" y="40" width="4" height="13" rx="2" fill="#c83d3d"/>
+                <polygon points="32,42 29,55 35,55" fill="#c83d3d"/>
+                <ellipse cx="28.5" cy="19" rx="1.2" ry="1.7" fill="#222"/>
+                <ellipse cx="35.5" cy="19" rx="1.2" ry="1.7" fill="#222"/>
+                <path d="M29 23 Q32 26 35 23" stroke="#222" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+        <span class="intro-text">HI, I'M KAILASH KUMAR</span>
+    </div>
+
+    <div class="container">
+        <div class="nav-tabs">
+            <button class="active" id="tabBtn0" onclick="showTab(0)">Home</button>
+            <button id="tabBtn1" onclick="showTab(1)">Soft Skills</button>
+            <button id="tabBtn2" onclick="showTab(2)">Education</button>
+            <button id="tabBtn3" onclick="showTab(3)">Contact Me</button>
+        </div>
+
+        <div class="tab-content active" id="tabContent0">
+            <div class="section-title">ABOUT ME</div>
+            <p class="info-text">
+                I am a B.Tech final year student pursuing my degree in
+                <span class="bold">Artificial Intelligence & Data Science (AI&amp;DS)</span>. I'm passionate about web designing and learning about new technologies. As a <span class="bold">Python</span> enthusiast, I love to build new projects and enhance my skills.
+            </p>
+            <div class="section-title">MY SKILLS</div>
+            <div class="sub-heading">
+                <!-- Programming Icon -->
+                <svg width="22" height="22" fill="#0b1f3a" viewBox="0 0 24 24">
+                    <rect x="5" y="6" width="14" height="12" rx="2" fill="#2079bd"/>
+                    <rect x="9" y="10" width="6" height="4" rx="1.2" fill="#fff"/>
+                </svg>
+                Programming Languages
+            </div>
+            <div class="skills-list">
+                <ul>
+                    <li>Python</li>
+                    <li>HTML</li>
+                    <li>CSS</li>
+                </ul>
+            </div>
+            <div class="sub-heading">
+                <!-- database icon -->
+                <svg width="20" height="20" fill="#0b1f3a" viewBox="0 0 24 24">
+                    <ellipse cx="12" cy="6" rx="8" ry="4"/>
+                    <path d="M4 6v12c0 2.21 3.58 4 8 4s8-1.79 8-4V6"/>
+                </svg>
+                Database &amp; Tools
+            </div>
+            <div class="skills-list">
+                <ul>
+                    <li>MySQL</li>
+                    <li>Data Modeling</li>
+                    <li>Query Optimization</li>
+                </ul>
+            </div>
+            <div class="sub-heading">
+                <!-- web icon -->
+                <svg width="21" height="21" fill="#0b1f3a" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M2 12h20M12 2c2.4 3.8 2.4 15.2 0 18m-8-5c1.5-2.5 4.5-2.5 6 0m12-5c-1.5-2.5-4.5-2.5-6 0"/>
+                </svg>
+                Web Development
+            </div>
+            <div class="skills-list">
+                <ul>
+                    <li>Django</li>
+                    <li>Flask</li>
+                    <li>REST APIs</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tabContent1">
+            <div class="section-title">SOFT SKILLS</div>
+            <div class="soft-skills-list">
+                <ul>
+                    <li>Communication</li>
+                    <li>Problem Solving Abilities</li>
+                    <li>Time Management</li>
+                    <li>Quick Learner</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tabContent2">
+            <div class="section-title">EDUCATION</div>
+            <p class="info-text">
+                B.Tech (<span class="bold">AI&amp;DS</span>) — Malla Reddy College of Engineering<br>
+                Year of Passing: 2022 - 2026 | CGPA: 7.0
+            </p>
+        </div>
+
+        <div class="tab-content" id="tabContent3">
+            <div class="contact-title">CONTACT</div>
+            <div class="contact-details">
+                <p>Phone: 9550587757</p>
+                <p>E-mail: kailashkumarcingeetham@gmail.com</p>
+            </div>
+            <div class="location">Location: Hyderabad, Telangana, India</div>
+            <div class="social-icons">
+                <a class="social-icon" href="#" title="GitHub">
+                    <svg width="24" height="24" fill="#0b1f3a" viewBox="0 0 24 24">
+                        <path d="M12 2c-5.52 0-10 4.48-10 10a10 10 0 006.84 9.5c.5.09.68-.22.68-.48v-1.7c-2.78.61-3.37-1.34-3.37-1.34-.45-1.15-1.1-1.46-1.1-1.46-.9-.61.07-.6.07-.6 1 .08 1.53 1.03 1.53 1.03.88 1.52 2.3 1.09 2.86.84.09-.64.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.26-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.52 9.52 0 012.5-.34c.85.01 1.71.12 2.5.34 1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.38.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.3.68.89.68 1.8v2.68c0 .27.18.58.69.48A10 10 0 0022 12c0-5.52-4.48-10-10-10z"/>
+                    </svg>
+                </a>
+                <a class="social-icon" href="#" title="LinkedIn">
+                    <svg width="24" height="24" fill="#0b1f3a" viewBox="0 0 24 24">
+                        <path d="M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5 11h-3v-5c0-1.1-.9-2-2-2s-2 .9-2 2v5h-3v-10h3v1.18c.41-.68 1.4-1.18 2.42-1.18 2.05 0 3.58 1.53 3.58 3.53v6.47z"/>
+                    </svg>
+                </a>
+                <a class="social-icon" href="#" title="Gmail">
+                    <svg width="24" height="24" fill="#0b1f3a" viewBox="0 0 24 24">
+                        <path d="M20 4h-16c-1.104 0-2 .896-2 2v12c0 1.104.896 2 2 2h16c1.104 0 2-.896 2-2v-12c0-1.104-.896-2-2-2zm-8 7.68l-7.2-5.28h14.4l-7.2 5.28zm-7.2 6.32v-10.16l7.2 5.28 7.2-5.28v10.16h-14.4z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showTab(idx) {
+            for (let i = 0; i < 4; i++) {
+                document.getElementById('tabBtn'+i).classList.toggle('active', i===idx);
+                document.getElementById('tabContent'+i).classList.toggle('active', i===idx);
+            }
+        }
+        showTab(0); // Show home tab by default
+    </script>
+</body>
+</html>
